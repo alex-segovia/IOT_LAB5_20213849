@@ -50,7 +50,7 @@ public class ListaElementosAdapter extends RecyclerView.Adapter<ListaElementosAd
         textoNombreElemento.setText(elementoDTO.getNombre());
 
         TextView textoCaloriasElemento = holder.itemView.findViewById(R.id.caloriasElemento);
-        textoCaloriasElemento.setText(elementoDTO.getCalorias().toString()+" cal");
+        textoCaloriasElemento.setText(elementoDTO.getCalorias().toString()+" kcal");
     }
 
     @Override

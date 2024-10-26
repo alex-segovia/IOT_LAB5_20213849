@@ -31,27 +31,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo" />
 
-    <TextView
-        android:id="@+id/caloriasRestantes"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayoutCalorias"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Calorías restantes: 2500 calorías"
-        android:textSize="14sp"
+        android:orientation="vertical"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caloriasTotales" />
+        app:layout_constraintTop_toBottomOf="@+id/caloriasTotales">
 
-    <TextView
-        android:id="@+id/caloriasConsumidas"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="Calorías consumidas: 0 calorías"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caloriasRestantes" />
+        <TextView
+            android:id="@+id/caloriasRestantes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Calorías restantes: 2500 calorías"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/caloriasConsumidas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Calorías consumidas: 0 calorías"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/metaAlcanzada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:visibility="gone"
+            android:text="¡Felicidades! \n Has alcanzado tu meta de calorías recomendadas"
+            android:textSize="14sp" />
+    </LinearLayout>
+
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -59,7 +75,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caloriasConsumidas">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutCalorias">
 
     </com.google.android.material.divider.MaterialDivider>
 
@@ -75,7 +91,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caloriasConsumidas" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutCalorias" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/campoNombre"

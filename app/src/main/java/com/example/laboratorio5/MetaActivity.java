@@ -35,6 +35,7 @@ public class MetaActivity extends AppCompatActivity {
     private BigDecimal tmb;
     private BigDecimal caloriasConsumidas;
     private BigDecimal caloriasRestantes;
+    private BigDecimal caloriasRecomendadas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,17 +77,21 @@ public class MetaActivity extends AppCompatActivity {
 
         tmb = tmb.stripTrailingZeros();
 
+        caloriasRecomendadas = tmb;
         caloriasRestantes = tmb;
         caloriasConsumidas = tmb.subtract(caloriasRestantes).stripTrailingZeros();
 
         TextView textoCaloriasTotales = findViewById(R.id.caloriasTotales);
-        textoCaloriasTotales.setText("Calorías recomendadas: " + tmb + " calorías");
+        String tmbAux = tmb.scale()>0?tmb.toPlainString():tmb.toBigInteger().toString();
+        textoCaloriasTotales.setText("Calorías recomendadas: " + tmbAux + " kcal");
 
         TextView textoCaloriasRestantes = findViewById(R.id.caloriasRestantes);
-        textoCaloriasRestantes.setText("Calorías restantes: " + caloriasRestantes + " calorías");
+        String caloriasRestantesAux = caloriasRestantes.scale()>0?caloriasRestantes.toPlainString():caloriasRestantes.toBigInteger().toString();
+        textoCaloriasRestantes.setText("Calorías restantes: " + caloriasRestantesAux + " kcal");
 
         TextView textoCaloriasConsumidas = findViewById(R.id.caloriasConsumidas);
-        textoCaloriasConsumidas.setText("Calorías consumidas: " + caloriasConsumidas + " calorías");
+        String caloriasConsumidasAux = caloriasConsumidas.scale()>0?caloriasConsumidas.toPlainString():caloriasConsumidas.toBigInteger().toString();
+        textoCaloriasConsumidas.setText("Calorías consumidas: " + caloriasConsumidasAux + " kcal");
 
         Spinner spinnerTipo = findViewById(R.id.spinnerTipo);
         String[] tipos = {"Selecciona el tipo","Comida","Actividad física"};
@@ -193,7 +198,7 @@ public class MetaActivity extends AppCompatActivity {
                     recyclerViewComidasHoy.setVisibility(View.VISIBLE);
 
                     caloriasConsumidas = caloriasConsumidas.add(elementoAux.getCalorias()).stripTrailingZeros();
-                    caloriasRestantes = caloriasRestantes.subtract(elementoAux.getCalorias()).stripTrailingZeros();
+                    caloriasRestantes = caloriasRecomendadas.subtract(caloriasConsumidas).stripTrailingZeros();
 
                 }else{
                     listaActividadesFisicasHoy.add(elementoAux);
@@ -208,8 +213,22 @@ public class MetaActivity extends AppCompatActivity {
                     caloriasRestantes = caloriasRestantes.add(elementoAux.getCalorias()).stripTrailingZeros();
                 }
 
-                textoCaloriasRestantes.setText("Calorías restantes: " + caloriasRestantes + " calorías");
-                textoCaloriasConsumidas.setText("Calorías consumidas: " + caloriasConsumidas + " calorías");
+                TextView textoMetaAlcanzada = findViewById(R.id.metaAlcanzada);
+
+                if(caloriasRecomendadas.compareTo(caloriasConsumidas)<=0){
+                    textoCaloriasRestantes.setVisibility(View.GONE);
+                    textoCaloriasConsumidas.setVisibility(View.GONE);
+                    textoMetaAlcanzada.setVisibility(View.VISIBLE);
+                }else{
+                    textoMetaAlcanzada.setVisibility(View.GONE);
+                    textoCaloriasRestantes.setVisibility(View.VISIBLE);
+                    textoCaloriasConsumidas.setVisibility(View.VISIBLE);
+                }
+
+                String caloriasRestantesAux2 = caloriasRestantes.scale()>0?caloriasRestantes.toPlainString():caloriasRestantes.toBigInteger().toString();
+                String caloriasConsumidasAux2 = caloriasConsumidas.scale()>0?caloriasConsumidas.toPlainString():caloriasConsumidas.toBigInteger().toString();
+                textoCaloriasRestantes.setText("Calorías restantes: " + caloriasRestantesAux2 + " kcal");
+                textoCaloriasConsumidas.setText("Calorías consumidas: " + caloriasConsumidasAux2 + " kcal");
             }
         });
     }

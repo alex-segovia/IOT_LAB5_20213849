@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Calorías a consumir por día: 2500"
+        android:text="Calorías recomendadas: 2500 calorías"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,11 +36,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="Calorías restantes de hoy: 2500"
+        android:text="Calorías restantes: 2500 calorías"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/caloriasTotales" />
+
+    <TextView
+        android:id="@+id/caloriasConsumidas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Calorías consumidas: 0 calorías"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/caloriasRestantes" />
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -48,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caloriasRestantes">
+        app:layout_constraintTop_toBottomOf="@+id/caloriasConsumidas">
 
     </com.google.android.material.divider.MaterialDivider>
 
@@ -64,7 +75,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/caloriasRestantes" />
+        app:layout_constraintTop_toBottomOf="@+id/caloriasConsumidas" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/campoNombre"
@@ -164,8 +175,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/botonRegistrar" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerComidasHoy"
+    <LinearLayout
+        android:id="@+id/linearLayoutComidasHoy"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
@@ -173,7 +184,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo3">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerComidasHoy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/textoAlertaComidasHoy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="No has registrado ninguna comida hoy">
+
+        </TextView>
+
+    </LinearLayout>
+
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -181,7 +211,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerComidasHoy">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutComidasHoy">
 
     </com.google.android.material.divider.MaterialDivider>
 
@@ -197,10 +227,10 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerComidasHoy" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutComidasHoy" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerActividadesFisicasHoy"
+    <LinearLayout
+        android:id="@+id/linearLayoutActividadesFisicasHoy"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
@@ -208,7 +238,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo4">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerActividadesFisicasHoy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+        <TextView
+            android:id="@+id/textoAlertaActividadesFisicasHoy"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:text="No has registrado ninguna actividad física hoy">
+
+        </TextView>
+
+    </LinearLayout>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
@@ -216,7 +264,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerActividadesFisicasHoy">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutActividadesFisicasHoy">
 
     </com.google.android.material.divider.MaterialDivider>
 
@@ -232,7 +280,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/recyclerActividadesFisicasHoy" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutActividadesFisicasHoy" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerComidasComunes"

@@ -28,9 +28,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titulo"
-        android:hint="Peso">
+        android:hint="Peso (en kg)">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/peso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
@@ -47,9 +48,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/campoPeso"
-        android:hint="Altura">
+        android:hint="Altura (en cm)">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/altura"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal"
@@ -66,9 +68,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/campoAltura"
-        android:hint="Edad">
+        android:hint="Edad (en años)">
 
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
@@ -139,6 +142,26 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/campoTiempo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginHorizontal="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/campoObjetivo"
+        android:hint="Tiempo entre notificaciones (en minutos)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:id="@+id/botonIniciar"
@@ -147,7 +170,7 @@
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/campoObjetivo"
+        app:layout_constraintTop_toBottomOf="@+id/campoTiempo"
         android:text="Iniciar seguimiento"
         />
 

@@ -1,11 +1,14 @@
 package com.example.laboratorio5;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
         Spinner spinnerNivel = findViewById(R.id.spinnerNivel);
         Spinner spinnerObjetivo = findViewById(R.id.spinnerObjetivo);
 
-        String[] generos = {"Genero","Hombre","Mujer"};
-        String[] niveles = {"Nivel de actividad física","Poco ejercicio","Ejercicio ligero","Ejercicio moderado","Ejercicio fuerte","Ejercicio muy fuerte"};
-        String[] objetivos = {"Objetivo","Subir de peso","Bajar de peso","Mantener el peso"};
+        String[] generos = {"Selecciona tu género","Hombre","Mujer"};
+        String[] niveles = {"Selecciona tu nivel de actividad física","Poco ejercicio","Ejercicio ligero","Ejercicio moderado","Ejercicio fuerte","Ejercicio muy fuerte"};
+        String[] objetivos = {"Elige tu objetivo","Subir de peso","Bajar de peso","Mantener el peso"};
 
         ArrayAdapter<String> adapterGenero = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,generos){
             @Override
@@ -102,5 +105,28 @@ public class MainActivity extends AppCompatActivity {
         spinnerGenero.setAdapter(adapterGenero);
         spinnerNivel.setAdapter(adapterNivel);
         spinnerObjetivo.setAdapter(adapterObjetivo);
+
+        Button botonIniciar = findViewById(R.id.botonIniciar);
+        botonIniciar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText textoPeso = findViewById(R.id.peso);
+                usuario.setPeso(Float.parseFloat(textoPeso.getText().toString()));
+
+                EditText textoAltura = findViewById(R.id.altura);
+                usuario.setAltura(Float.parseFloat(textoAltura.getText().toString()));
+
+                EditText textoEdad = findViewById(R.id.edad);
+                usuario.setEdad(Integer.parseInt(textoEdad.getText().toString()));
+
+                usuario.setGenero(spinnerGenero.getSelectedItem().toString());
+                usuario.setNivel(spinnerNivel.getSelectedItem().toString());
+                usuario.setObjetivo(spinnerObjetivo.getSelectedItem().toString());
+
+                Intent intent = new Intent(MainActivity.this,MetaActivity.class);
+                intent.putExtra("usuario",usuario);
+                startActivity(intent);
+            }
+        });
     }
 }

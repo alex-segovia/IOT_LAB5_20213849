@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -37,14 +36,14 @@ import com.example.laboratorio5.Adapters.ListaElementosAdapter;
 import com.example.laboratorio5.Objetos.ElementoDTO;
 import com.example.laboratorio5.Objetos.Usuario;
 import com.example.laboratorio5.Workers.Notificacion;
+import com.example.laboratorio5.Workers.Objetivo;
 import com.example.laboratorio5.Workers.Reinicio;
 import com.google.gson.Gson;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class MetaActivity extends AppCompatActivity {
@@ -262,18 +261,50 @@ public class MetaActivity extends AppCompatActivity {
             }
         });
 
+        Objetivo objetivo = (Objetivo) getApplication();
+        ExecutorService executorService = objetivo.executorService;
+
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),0,intent,PendingIntent.FLAG_IMMUTABLE);
+
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(),"Objetivo")
+                            .setSmallIcon(R.drawable.icon_motivacion)
+                            .setContentTitle("Mensaje de motivación")
+                            .setContentText("Un estilo de vida saludable es una inversión en tu futuro. Sigue adelante para alcanzar tu objetivo!")
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setContentIntent(pendingIntent)
+                            .setAutoCancel(true);
+
+                    NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getApplicationContext());
+                    if(ActivityCompat.checkSelfPermission(getApplicationContext(),POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+                        notificationManagerCompat.notify(3,builder.build());
+                    }
+
+                    try {
+                        Thread.sleep(1000L *60*usuario.getTiempo());
+                    }catch (InterruptedException e){
+                        throw new RuntimeException();
+                    }
+                }
+            }
+        });
+
         Calendar calendarDesayuno = Calendar.getInstance();
-        calendarDesayuno.set(Calendar.HOUR_OF_DAY,0);
+        calendarDesayuno.set(Calendar.HOUR_OF_DAY,6);
         calendarDesayuno.set(Calendar.MINUTE,0);
         calendarDesayuno.set(Calendar.SECOND,0);
 
         Calendar calendarAlmuerzo = Calendar.getInstance();
-        calendarAlmuerzo.set(Calendar.HOUR_OF_DAY,11);
+        calendarAlmuerzo.set(Calendar.HOUR_OF_DAY,12);
         calendarAlmuerzo.set(Calendar.MINUTE,0);
         calendarAlmuerzo.set(Calendar.SECOND,0);
 
         Calendar calendarCena = Calendar.getInstance();
-        calendarCena.set(Calendar.HOUR_OF_DAY,18);
+        calendarCena.set(Calendar.HOUR_OF_DAY,19);
         calendarCena.set(Calendar.MINUTE,0);
         calendarCena.set(Calendar.SECOND,0);
 

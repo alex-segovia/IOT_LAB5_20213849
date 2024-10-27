@@ -126,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
                 EditText textoEdad = findViewById(R.id.edad);
                 usuario.setEdad(Integer.parseInt(textoEdad.getText().toString()));
 
+                EditText textoTiempo = findViewById(R.id.tiempo);
+                usuario.setTiempo(Integer.parseInt(textoTiempo.getText().toString()));
+
                 usuario.setGenero(spinnerGenero.getSelectedItem().toString());
                 usuario.setNivel(spinnerNivel.getSelectedItem().toString());
                 usuario.setObjetivo(spinnerObjetivo.getSelectedItem().toString());

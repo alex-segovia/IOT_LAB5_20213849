@@ -9,6 +9,15 @@ public class Usuario implements Serializable {
     private String genero;
     private String nivel;
     private String objetivo;
+    private int tiempo;
+
+    public int getTiempo() {
+        return tiempo;
+    }
+
+    public void setTiempo(int tiempo) {
+        this.tiempo = tiempo;
+    }
 
     public float getAltura() {
         return altura;

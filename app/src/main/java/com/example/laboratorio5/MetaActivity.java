@@ -38,18 +38,20 @@ import com.example.laboratorio5.Objetos.ElementoDTO;
 import com.example.laboratorio5.Objetos.Usuario;
 import com.example.laboratorio5.Workers.Notificacion;
 import com.example.laboratorio5.Workers.Reinicio;
+import com.google.gson.Gson;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class MetaActivity extends AppCompatActivity {
 
-    private BigDecimal tmb;
-    private BigDecimal caloriasConsumidas;
-    private BigDecimal caloriasRestantes;
+    private static BigDecimal tmb;
+    private static BigDecimal caloriasConsumidas;
+    private static BigDecimal caloriasRestantes;
     private BigDecimal caloriasRecomendadas;
 
     private static ArrayList<ElementoDTO> listaComidasHoy = new ArrayList<>();
@@ -61,6 +63,16 @@ public class MetaActivity extends AppCompatActivity {
 
     private static RecyclerView recyclerViewComidasHoy;
     private static RecyclerView recyclerViewActividadesFisicasHoy;
+
+    private static TextView textoAlertaComidasHoy;
+
+    private static TextView textoAlertaActividadesFisicasHoy;
+
+    private static TextView textoMetaAlcanzada;
+
+    private static TextView textoCaloriasRestantes;
+
+    private static TextView textoCaloriasConsumidas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +122,11 @@ public class MetaActivity extends AppCompatActivity {
         String tmbAux = tmb.scale()>0?tmb.toPlainString():tmb.toBigInteger().toString();
         textoCaloriasTotales.setText("Calorías recomendadas: " + tmbAux + " kcal");
 
-        TextView textoCaloriasRestantes = findViewById(R.id.caloriasRestantes);
+        textoCaloriasRestantes = findViewById(R.id.caloriasRestantes);
         String caloriasRestantesAux = caloriasRestantes.scale()>0?caloriasRestantes.toPlainString():caloriasRestantes.toBigInteger().toString();
         textoCaloriasRestantes.setText("Calorías restantes: " + caloriasRestantesAux + " kcal");
 
-        TextView textoCaloriasConsumidas = findViewById(R.id.caloriasConsumidas);
+        textoCaloriasConsumidas = findViewById(R.id.caloriasConsumidas);
         String caloriasConsumidasAux = caloriasConsumidas.scale()>0?caloriasConsumidas.toPlainString():caloriasConsumidas.toBigInteger().toString();
         textoCaloriasConsumidas.setText("Calorías consumidas: " + caloriasConsumidasAux + " kcal");
 
@@ -210,7 +222,7 @@ public class MetaActivity extends AppCompatActivity {
                     adapterComidasHoy.setListaElementos(listaComidasHoy);
                     recyclerViewComidasHoy.setAdapter(adapterComidasHoy);
 
-                    TextView textoAlertaComidasHoy = findViewById(R.id.textoAlertaComidasHoy);
+                    textoAlertaComidasHoy = findViewById(R.id.textoAlertaComidasHoy);
                     textoAlertaComidasHoy.setVisibility(View.GONE);
                     recyclerViewComidasHoy.setVisibility(View.VISIBLE);
 
@@ -222,7 +234,7 @@ public class MetaActivity extends AppCompatActivity {
                     adapterActividadesFisicasHoy.setListaElementos(listaActividadesFisicasHoy);
                     recyclerViewActividadesFisicasHoy.setAdapter(adapterActividadesFisicasHoy);
 
-                    TextView textoAlertaActividadesFisicasHoy = findViewById(R.id.textoAlertaActividadesFisicasHoy);
+                    textoAlertaActividadesFisicasHoy = findViewById(R.id.textoAlertaActividadesFisicasHoy);
                     textoAlertaActividadesFisicasHoy.setVisibility(View.GONE);
                     recyclerViewActividadesFisicasHoy.setVisibility(View.VISIBLE);
 
@@ -230,7 +242,7 @@ public class MetaActivity extends AppCompatActivity {
                     caloriasRestantes = caloriasRestantes.add(elementoAux.getCalorias()).stripTrailingZeros();
                 }
 
-                TextView textoMetaAlcanzada = findViewById(R.id.metaAlcanzada);
+                textoMetaAlcanzada = findViewById(R.id.metaAlcanzada);
 
                 if(caloriasRecomendadas.compareTo(caloriasConsumidas)<=0){
                     textoCaloriasRestantes.setVisibility(View.GONE);
@@ -327,8 +339,16 @@ public class MetaActivity extends AppCompatActivity {
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificacionCena", ExistingPeriodicWorkPolicy.REPLACE,workRequestCena);
 
+        Gson gson = new Gson();
+        String datosJson = gson.toJson(usuario);
+
+        Data datosReinicioAux = new Data.Builder()
+                .putString("usuario",datosJson)
+                .build();
+
         PeriodicWorkRequest workRequestReinicio = new PeriodicWorkRequest.Builder(Reinicio.class,1,TimeUnit.DAYS)
                 .setInitialDelay(tiempoAuxFinDia-tiempoActual,TimeUnit.MILLISECONDS)
+                .setInputData(datosReinicioAux)
                 .build();
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork("Reinicio", ExistingPeriodicWorkPolicy.REPLACE,workRequestReinicio);

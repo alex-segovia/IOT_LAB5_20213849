@@ -1,7 +1,13 @@
 package com.example.laboratorio5;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +22,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -128,5 +135,32 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        crearCanalesNotificaciones();
+    }
+
+    public void crearCanalesNotificaciones(){
+        NotificationChannel canalAlertas = new NotificationChannel("Alertas","Alertas de calorías", NotificationManager.IMPORTANCE_HIGH);
+        canalAlertas.setDescription("Canal para las alertas de exceso de calorías");
+        NotificationManager notificationManagerAlertas = getSystemService(NotificationManager.class);
+        notificationManagerAlertas.createNotificationChannel(canalAlertas);
+
+        NotificationChannel canalRecordatorios = new NotificationChannel("Recordatorios","Recordatorios personalizados", NotificationManager.IMPORTANCE_HIGH);
+        canalRecordatorios.setDescription("Canal para los recordatorios personalizados para registrar comidas");
+        NotificationManager notificationManagerRecordatorios = getSystemService(NotificationManager.class);
+        notificationManagerRecordatorios.createNotificationChannel(canalRecordatorios);
+
+        NotificationChannel canalObjetivo = new NotificationChannel("Objetivo","Notificaciones del objetivo", NotificationManager.IMPORTANCE_HIGH);
+        canalObjetivo.setDescription("Canal para las notificaciones del objetivo");
+        NotificationManager notificationManagerObjetivo = getSystemService(NotificationManager.class);
+        notificationManagerObjetivo.createNotificationChannel(canalObjetivo);
+
+        solicitarPermisosNotificaciones();
+    }
+
+    public void solicitarPermisosNotificaciones(){
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.TIRAMISU && ActivityCompat.checkSelfPermission(this,POST_NOTIFICATIONS) == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this,new String[]{POST_NOTIFICATIONS},101);
+        }
     }
 }

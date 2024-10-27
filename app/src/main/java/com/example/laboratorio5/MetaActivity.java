@@ -1,6 +1,10 @@
 package com.example.laboratorio5;
 
+import static android.Manifest.permission.POST_NOTIFICATIONS;
+
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,19 +20,30 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import com.example.laboratorio5.Adapters.ListaElementosAdapter;
 import com.example.laboratorio5.Objetos.ElementoDTO;
 import com.example.laboratorio5.Objetos.Usuario;
+import com.example.laboratorio5.Workers.Notificacion;
+import com.example.laboratorio5.Workers.Reinicio;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class MetaActivity extends AppCompatActivity {
 
@@ -36,6 +51,16 @@ public class MetaActivity extends AppCompatActivity {
     private BigDecimal caloriasConsumidas;
     private BigDecimal caloriasRestantes;
     private BigDecimal caloriasRecomendadas;
+
+    private static ArrayList<ElementoDTO> listaComidasHoy = new ArrayList<>();
+    private static ListaElementosAdapter adapterComidasHoy = new ListaElementosAdapter();
+
+    private static ArrayList<ElementoDTO> listaActividadesFisicasHoy = new ArrayList<>();
+
+    private static ListaElementosAdapter adapterActividadesFisicasHoy = new ListaElementosAdapter();
+
+    private static RecyclerView recyclerViewComidasHoy;
+    private static RecyclerView recyclerViewActividadesFisicasHoy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,25 +142,17 @@ public class MetaActivity extends AppCompatActivity {
 
         spinnerTipo.setAdapter(adapterTipo);
 
-
-        ArrayList<ElementoDTO> listaComidasHoy = new ArrayList<>();
-
-        ListaElementosAdapter adapterComidasHoy = new ListaElementosAdapter();
         adapterComidasHoy.setContext(MetaActivity.this);
         adapterComidasHoy.setListaElementos(listaComidasHoy);
 
-        RecyclerView recyclerViewComidasHoy = findViewById(R.id.recyclerComidasHoy);
+        recyclerViewComidasHoy = findViewById(R.id.recyclerComidasHoy);
         recyclerViewComidasHoy.setAdapter(adapterComidasHoy);
         recyclerViewComidasHoy.setLayoutManager(new LinearLayoutManager(MetaActivity.this,LinearLayoutManager.HORIZONTAL,false));
 
-
-        ArrayList<ElementoDTO> listaActividadesFisicasHoy = new ArrayList<>();
-
-        ListaElementosAdapter adapterActividadesFisicasHoy = new ListaElementosAdapter();
         adapterActividadesFisicasHoy.setContext(MetaActivity.this);
         adapterActividadesFisicasHoy.setListaElementos(listaActividadesFisicasHoy);
 
-        RecyclerView recyclerViewActividadesFisicasHoy = findViewById(R.id.recyclerActividadesFisicasHoy);
+        recyclerViewActividadesFisicasHoy = findViewById(R.id.recyclerActividadesFisicasHoy);
         recyclerViewActividadesFisicasHoy.setAdapter(adapterActividadesFisicasHoy);
         recyclerViewActividadesFisicasHoy.setLayoutManager(new LinearLayoutManager(MetaActivity.this,LinearLayoutManager.HORIZONTAL,false));
 
@@ -219,6 +236,7 @@ public class MetaActivity extends AppCompatActivity {
                     textoCaloriasRestantes.setVisibility(View.GONE);
                     textoCaloriasConsumidas.setVisibility(View.GONE);
                     textoMetaAlcanzada.setVisibility(View.VISIBLE);
+                    lanzarAlerta();
                 }else{
                     textoMetaAlcanzada.setVisibility(View.GONE);
                     textoCaloriasRestantes.setVisibility(View.VISIBLE);
@@ -231,5 +249,113 @@ public class MetaActivity extends AppCompatActivity {
                 textoCaloriasConsumidas.setText("Calorías consumidas: " + caloriasConsumidasAux2 + " kcal");
             }
         });
+
+        Calendar calendarDesayuno = Calendar.getInstance();
+        calendarDesayuno.set(Calendar.HOUR_OF_DAY,0);
+        calendarDesayuno.set(Calendar.MINUTE,0);
+        calendarDesayuno.set(Calendar.SECOND,0);
+
+        Calendar calendarAlmuerzo = Calendar.getInstance();
+        calendarAlmuerzo.set(Calendar.HOUR_OF_DAY,11);
+        calendarAlmuerzo.set(Calendar.MINUTE,0);
+        calendarAlmuerzo.set(Calendar.SECOND,0);
+
+        Calendar calendarCena = Calendar.getInstance();
+        calendarCena.set(Calendar.HOUR_OF_DAY,18);
+        calendarCena.set(Calendar.MINUTE,0);
+        calendarCena.set(Calendar.SECOND,0);
+
+        Calendar calendarFinDeDia = Calendar.getInstance();
+        calendarFinDeDia.set(Calendar.HOUR_OF_DAY,0);
+        calendarFinDeDia.set(Calendar.MINUTE,0);
+        calendarFinDeDia.set(Calendar.SECOND,0);
+
+        Data datosDesayuno = new Data.Builder()
+                .putString("comida","desayuno")
+                .build();
+
+        Data datosAlmuerzo = new Data.Builder()
+                .putString("comida","almuerzo")
+                .build();
+
+        Data datosCena = new Data.Builder()
+                .putString("comida","cena")
+                .build();
+
+        long tiempoActual = System.currentTimeMillis();
+
+        long tiempoAuxDesayuno = calendarDesayuno.getTimeInMillis();
+        long tiempoAuxAlmuerzo = calendarAlmuerzo.getTimeInMillis();
+        long tiempoAuxCena = calendarCena.getTimeInMillis();
+        long tiempoAuxFinDia = calendarFinDeDia.getTimeInMillis();
+
+        if(tiempoAuxFinDia <= tiempoActual){
+            tiempoAuxFinDia += TimeUnit.DAYS.toMillis(1);
+        }
+
+        if(tiempoAuxDesayuno <= tiempoActual){
+            tiempoAuxDesayuno += TimeUnit.DAYS.toMillis(1);
+        }
+
+        PeriodicWorkRequest workRequestDesayuno = new PeriodicWorkRequest.Builder(Notificacion.class,1, TimeUnit.DAYS)
+                .setInitialDelay(tiempoAuxDesayuno-tiempoActual, TimeUnit.MILLISECONDS)
+                .setInputData(datosDesayuno)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificacionDesayuno", ExistingPeriodicWorkPolicy.REPLACE,workRequestDesayuno);
+
+
+        if(tiempoAuxAlmuerzo <= tiempoActual){
+            tiempoAuxAlmuerzo += TimeUnit.DAYS.toMillis(1);
+        }
+
+        PeriodicWorkRequest workRequestAlmuerzo = new PeriodicWorkRequest.Builder(Notificacion.class,1, TimeUnit.DAYS)
+                .setInitialDelay(tiempoAuxAlmuerzo-tiempoActual, TimeUnit.MILLISECONDS)
+                .setInputData(datosAlmuerzo)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificacionAlmuerzo", ExistingPeriodicWorkPolicy.REPLACE,workRequestAlmuerzo);
+
+        if(tiempoAuxCena <= tiempoActual){
+            tiempoAuxCena += TimeUnit.DAYS.toMillis(1);
+        }
+
+        PeriodicWorkRequest workRequestCena = new PeriodicWorkRequest.Builder(Notificacion.class,1, TimeUnit.DAYS)
+                .setInitialDelay(tiempoAuxCena-tiempoActual, TimeUnit.MILLISECONDS)
+                .setInputData(datosCena)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("NotificacionCena", ExistingPeriodicWorkPolicy.REPLACE,workRequestCena);
+
+        PeriodicWorkRequest workRequestReinicio = new PeriodicWorkRequest.Builder(Reinicio.class,1,TimeUnit.DAYS)
+                .setInitialDelay(tiempoAuxFinDia-tiempoActual,TimeUnit.MILLISECONDS)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("Reinicio", ExistingPeriodicWorkPolicy.REPLACE,workRequestReinicio);
+    }
+
+    public void lanzarAlerta(){
+        Intent intent = new Intent(MetaActivity.this, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(MetaActivity.this,0,intent,PendingIntent.FLAG_IMMUTABLE);
+
+        BigDecimal excesoCalorias = caloriasConsumidas.subtract(caloriasRecomendadas).stripTrailingZeros();
+        String exceso = excesoCalorias.scale()>0?excesoCalorias.toPlainString():excesoCalorias.toBigInteger().toString();
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MetaActivity.this,"Alertas")
+                .setSmallIcon(R.drawable.icon_alerta)
+                .setContentTitle("¡Exceso de calorías!")
+                .setContentText("Has consumido " + exceso + " kcal más de las recomendadas para hoy. Haz ejercicio o reduce las calorías de tus próximas comidas.")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MetaActivity.this);
+        if(ActivityCompat.checkSelfPermission(MetaActivity.this,POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED){
+            notificationManagerCompat.notify(0,builder.build());
+        }
+    }
+
+    public static boolean listaVacia(){
+        return listaComidasHoy.isEmpty();
     }
 }
